@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Questionare } from './components';
 
-const API_URL = 'https://opentdb.com/api.php?amount=10&category=14&difficulty=easy&type=multiple'
+const API_URL = 'https://opentdb.com/api.php?amount=10&category=18'
 
 function App() {
 
@@ -17,28 +17,44 @@ function App() {
     fetch(API_URL)
       .then(res => res.json())
       .then(data => {
-        setQuestions(data.results)
+
+        const questions = data.results.map(question => {
+          return {
+            ...question,
+            answers: [question.correct_answer, ...question.incorrect_answers].sort(() => Math.random() - 0.5)
+          }
+        })
+
+        setQuestions(questions)
       })
   }, [])
 
   const handleAnswer = (ans) => {
-    // const newIndex = currentIndex + 1;
-    // setCurrentIndex(newIndex)
 
-    if (ans === questions[currentIndex].correct_answer) {
-      setScore(score + 1)
+    if (!showAnswers) {
+      if (ans === questions[currentIndex].correct_answer) {
+        setScore(score + 1)
+      }
     }
+
+    setShowAnswers(true)
 
 
   }
 
+
+  const handleNextQuestion = () => {
+    setShowAnswers(false);
+    const newIndex = currentIndex + 1;
+    setCurrentIndex(newIndex)
+  }
 
   return questions.length > 0 ? (
     <div className="container">
       {
         currentIndex >= questions.length ? (
           <h1 className='text-3xl text-white font-bold'>Game Ended! Your score is {score}.</h1>
-        ) : <Questionare showAnswers data={questions[currentIndex]} handleAnswer={handleAnswer} />
+        ) : <Questionare handleNextQuestion={handleNextQuestion} showAnswers={showAnswers} data={questions[currentIndex]} handleAnswer={handleAnswer} />
       }
 
 

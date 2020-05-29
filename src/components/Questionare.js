@@ -1,21 +1,24 @@
 import React from 'react';
 
-function Questionare({ showAnswers, handleAnswer, data: { question, correct_answer, incorrect_answers } }) {
+function Questionare({ showAnswers, handleNextQuestion, handleAnswer, data: { question, correct_answer, answers } }) {
 
-  const shuffledAnswer = [correct_answer, ...incorrect_answers].sort(()=>Math.random() - 0.5)
 
   return (
-    <div>
+    <div className="flex flex-col">
       <div className="bg-white text-purple-800 p-10 rounded-lg shadow-md">
         <h2 className="text-2xl" dangerouslySetInnerHTML={{ __html: question }}>
         </h2>
       </div>
       <div className="grid grid-cols-2 gap-6 mt-6">
         {
-          shuffledAnswer.map((ans)=> <button key={ans} dangerouslySetInnerHTML={{ __html: ans }}  className={`bg-white p-4 text-purple-800 font-semibold  roudned shadow`} onClick={() => handleAnswer(ans)} answer={ans}/>)
+          answers.map((ans, idx) => {
+            const textColor = showAnswers ? (ans === correct_answer ? 'text-green-500' : 'text-red-500') : 'text-purple-700'
+            return <button key={idx} dangerouslySetInnerHTML={{ __html: ans }} className={` p-4 ${textColor} bg-white font-semibold  roudned shadow`} onClick={() => handleAnswer(ans)} answer={ans} />
+          })
         }
       </div>
-
+      <button onClick={handleNextQuestion} className={`${showAnswers ? 'visible' :' invisible'} bg-purple-700 mt-6 ml-auto text-white p-4 font-semibold rounded shadow`}>Next Question</button>
+      
     </div>
   );
 }
